@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio Website - Bouhouch Chouaib</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+    </style>
+    <script src="https://kit.fontawesome.com/55fdbda5a7.js" crossorigin="anonymous"></script>
+<body>
+    <div id="header">
+        <div class="container">
+            <nav>
+                <img src="./assets/images/C.png" class="logo">
+                <ul id="sidemenu">
+                    <li><a href="#header">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <i class="fas fa-solid fa-xmark" onclick="closemenu()"></i>
+                </ul>
+                <i class="fas fa-solid fa-bars" onclick="openmenu()"></i>
+            </nav>
+            <div class="header-text">
+                <p>CS/IT Student</p>
+                <h1>Hi, I'm <span>Chouaib</span><br>Bouhouch From France</h1>
+            </div>
+        </div>
+    </div>
+    <!-- ---------------About -->
+    <div id="about">
+        <div class="container">
+            <div class="row">
+                <div class="about-col-1">
+                    <img src="./assets/images/User_Red.png">
+                </div>
+                <div class="about-col-2">
+                    <h1 class="sub-title">About Me</h1>
+                    <p>First-year student in a Bachelor’s in Computer Science at Metz's UIT,
+                        passionate about web development and cybersecurity. Looking for an 8-
+                        week internship (April-May 2026) abroad to apply my skills in software
+                        development, database management, and full-stack web development.
+                    </p>
+
+                    <div class="tab-titles">
+                        <p class="tab-links active-link" onclick="opentab('skills')">Skills</p>
+                        <p class="tab-links" onclick="opentab('experience')">Experience</p>
+                        <p class="tab-links" onclick="opentab('education')">Education</p>
+                    </div>
+                    <div class="tab-contents active-tab" id="skills">
+                        <ul>
+                            <li><span>Programming.</span><br>Learning bunch of programming languages (Python, TypeScript, JavaScript, HTML/CSS, C, Bash)</li>
+                            <li><span>Databases.</span><br>Manipulate and create complex databases (MySQL, PhpMyAdmin, Looping)</li>
+                            <li><span>Network.</span><br>Understand how networks work and the differents components of it (Netacad, Cisco Packet Tracer)</li>
+                        </ul>
+                    </div>
+                    <div class="tab-contents" id="experience">
+                        <ul>
+                            <li><span>2025 - Current</span><br>Logistic Operator at Aldi - France</li>
+                            <li><span>2024 - Current</span><br>Website creation for individuals or companies, on my own (Scaleo©)</li>
+                            <li><span>Summer 2022 - 2023</span><br>HVAC Technician Helper at Rolligner - Luxembourg</li>
+                        </ul>
+                    </div>
+                    <div class="tab-contents" id="education">
+                        <ul>
+                            <li><span>2025</span><br>1rst year Bachelor's in CS - Lorraine's University Metz - France</li>
+                            <li><span>2024</span><br>HighSchool Dimploma - Private School - Thionville, France</li>
+                            <li><span>2024 to 2026</span><br>TOEIC and TOEFL (C1 - B2 level)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- -----------Services -->
+    <div id="services">
+        <div id="container">
+            <h1 class="sub-title">My Services</h1>
+            <div class="services-list">
+                <div>
+                    <i class="fa-solid fa-code"></i>
+                    <h2>Web Development</h2>
+                    <p>Designing and developing responsive websites using HTML, CSS, and JavaScript. Learning modern front-end frameworks, accessibility standards, and user experience principles.</p>
+                    <a href="https://fr.wikipedia.org/wiki/Programmation_web" target="_blank">Learn more</a>
+                </div>
+                <div>
+                    <i class="fa-solid fa-database"></i>
+                    <h2>Database Creation</h2>
+                    <p>Understanding relational databases and SQL. Creating and managing databases using MySQL and PhpMyAdmin. Learning how to optimize queries and ensure data integrity.</p>
+                    <a href="https://fr.wikipedia.org/wiki/PhpMyAdmin" target="_blank">Learn more</a>
+                </div>
+                <div>
+                    <i class="fa-solid fa-gamepad"></i>
+                    <h2>Software and Algorithm Development</h2>
+                    <p>Developing algorithms and implementing them in Python and C. Learning problem-solving techniques, recursion, and complexity analysis for efficient coding.</p>
+                    <a href="https://fr.wikipedia.org/wiki/C_(langage)" target="_blank">Learn more</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="portfolio">
+        <div class="container">
+            <h1 class="sub-title">My Work</h1>
+            <div class="work-list">
+                <div class="work">
+                    <img src="./assets/images/jkki4.jpg">
+                    <div class="layer">
+                        <h3>X and NIM games in C</h3>
+                        <p>Two projects I carried out during my 1st year of Computer Science (Games on a runtime terminal in C language)</p>
+                        <a href="./assets/X and Nim games (Rules and codes).zip" download><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+                <div class="work">
+                    <img src="./assets/images/jkki4.jpg">
+                    <div class="layer">
+                        <h3>Databases creation</h3>
+                        <p>Create and manage a database on PhpMyAdmin using the MySQL language</p>
+                        <a href="./assets/Database creation project.zip" download><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+                <div class="work">
+                    <img src="./assets/images/jkki4.jpg">
+                    <div class="layer">
+                        <h3>Web Design/Development</h3>
+                        <p>Designing and creating a website according to a client's needs and making it responsive (HTML/CSS/Javascript)</p>
+                        <a href="./assets/Website Dev project responsive.zip" download><i class="fa-solid fa-download"></i></a>
+                    </div>
+                </div>
+            </div>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScCgDIN-k3e62eKeu7N1Kj6ARBfKOBB4NDuWQgJBTpBNzBPVQ/viewform?usp=sharing" target="_blank" class="btn">See more</a>
+        </div>
+    </div>
+
+    <!-- -----------Contact -->
+    <div id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="contact-left">
+                    <h1 class="sub-title">Contact Me</h1>
+                    <p><i class="fa-solid fa-paper-plane"></i> bouhouch.chouaib.57@gmail.com</p>
+                    <p><i class="fa-solid fa-phone"></i> +33 0749034111</p>
+                    <div class="social-icons">
+                        <a href="https://www.facebook.com/profile.php?id=61572297256439" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="https://www.linkedin.com/in/chouaib-bouhouch-b93330319/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="https://www.instagram.com/ch.aybh?igsh=MXUxODVwemtkZHFpbw%3D%3D&utm_source=qr " target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://x.com/ch76943" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+                    </div>
+                    <a href="./assets/images/CV_Bouhouch_Chouaib_2025.pdf" download class="btn btn2">Download CV</a>
+                </div>
+                <div class="contact-right">
+                    <form name="submit-to-google-sheet">
+                        <input type="text" name="Name" placeholder="Your name" required>
+                        <input type="email" name="Email" placeholder="Your Email" required>
+                        <textarea name="Message" rows="6" placeholder="Your Message"></textarea>
+                        <button type="submit" class="btn btn2">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>Copyright © Chouaib - Made with <i class="fa-solid fa-heart"></i> by Bouhouch Chouaib</p>
+        </div>
+    </div>
+
+
+
+
+
+    <script>
+
+        var tablinks = document.getElementsByClassName("tab-links");
+        var tabcontents = document.getElementsByClassName("tab-contents");
+
+        function opentab(tabname){
+            for(tablink of tablinks){
+                tablink.classList.remove("active-link");
+            }
+            for(tabcontent of tabcontents){
+                tabcontent.classList.remove("active-tab");
+            }
+            event.currentTarget.classList.add("active-link");
+            document.getElementById(tabname).classList.add("active-tab");
+        }
+
+    </script>
+
+    <script>
+
+        var sidemeu = document.getElementById("sidemenu");
+
+        function openmenu(){
+            sidemeu.style.right = "0";
+        }
+        function closemenu(){
+            sidemeu.style.right = "-200px";
+        }
+
+    </script>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyptkeboi2olixiaZswxv91VaFEUWCFpO7DuUnq5v7CIFSg8cijOUmnweBeeW1vSDOtBw/exec'
+const form = document.forms['submit-to-google-sheet']
+const successMsg = document.createElement("p");
+
+form.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+    .then(response => {
+        console.log('Success!', response);
+        successMsg.innerHTML = "✅ Formulaire envoyé avec succès !";
+        successMsg.style.color = "green";
+        form.appendChild(successMsg);
+        form.reset();
+    })
+    .catch(error => {
+        console.error('Error!', error.message);
+        successMsg.innerHTML = "❌ Erreur lors de l'envoi.";
+        successMsg.style.color = "red";
+        form.appendChild(successMsg);
+    });
+});
+  </script>
+</body>
+</html>
