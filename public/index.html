@@ -3,12 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Liens relatifs : fonctionnent à la racine comme sous /portfolio/. -->
-    <meta http-equiv="refresh" content="0; url=fr/" />
-    <link rel="canonical" href="fr/" />
     <title>Chouaib Bouhouch</title>
+    <link rel="canonical" href="fr/" />
+    <!--
+      Redirection exécutée dans le <head>, donc avant que le corps ne s'affiche :
+      aucune page intermédiaire visible. location.replace n'empile pas d'entrée
+      dans l'historique — le bouton « retour » ne reboucle donc pas ici.
+      Les URL sont relatives : fonctionne à la racine comme sous /portfolio/.
+    -->
+    <script>
+      (function () {
+        var nav = (navigator.language || navigator.userLanguage || "fr").toLowerCase();
+        location.replace(nav.indexOf("en") === 0 ? "en/" : "fr/");
+      })();
+    </script>
+    <!-- Filet de sécurité si JavaScript est désactivé. -->
+    <noscript><meta http-equiv="refresh" content="0; url=fr/" /></noscript>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        background: #f6f6f3;
+        color: #17191d;
+        display: grid;
+        place-content: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      a {
+        color: #0f3557;
+      }
+    </style>
   </head>
   <body>
-    <p><a href="fr/">Version française</a> · <a href="en/">English version</a></p>
+    <!-- Visible uniquement sans JavaScript, le temps du meta refresh. -->
+    <p><a href="fr/">Portfolio — version française</a> · <a href="en/">English version</a></p>
   </body>
 </html>
