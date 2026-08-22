@@ -1,0 +1,61 @@
+---
+title: "Aleth"
+subtitle: "B2B SaaS in production — co-founder and technical lead"
+stack: "Python · FastAPI · PostgreSQL · Next.js · OAuth 2.0 · Stripe · Linux VPS / nginx"
+periode: "[TO BE COMPLETED: since when] — today"
+statut: "In production · customer pilot underway"
+resume: "A SaaS product that provides compliance indicators from Google Workspace and Microsoft 365 environments, read-only."
+order: 1
+---
+
+## The problem
+
+Organisations running on Google Workspace or Microsoft 365 struggle to know where they stand: the actual configuration of their environment changes constantly, and checking it against their compliance requirements is manual work few teams have time for.
+
+Aleth connects to these environments and turns them into actionable **indicators** and PDF reports. The positioning is deliberate: the product provides indicators to support decisions — never verdicts. <Todo>specify the target customer segment and the typical buying trigger</Todo>
+
+## The constraints
+
+- **Sensitive data that isn't ours.** The product reads information about its customers' work environment; every requested access scope must be defensible in front of a CISO.
+- **A real company, with competitors.** This page covers the problem, standard architecture choices and deliverables — deliberately nothing about the product's internal mechanics.
+- **A small team.** The product is built and maintained alongside my final year of studies: every technical choice has to save maintenance time.
+- **Real billing.** A Stripe subscription flow in production, which means webhooks to make reliable and account states to handle properly.
+
+## The decisions
+
+<Decision
+  n="01"
+  statut="adopted"
+  titre="Strictly read-only integrations"
+  contexte="The product needs to connect to customer environments through the Google Workspace Admin SDK and Microsoft Graph."
+  retenu="OAuth 2.0 with scopes limited to read access. The access surface is minimal, the security case fits in one sentence in front of a CISO, and no code error can ever modify a customer's environment."
+  ecarte="Write scopes, which would have enabled automated remediation: the added value justified neither the risk nor the extra friction in the sales conversation."
+/>
+
+<Decision
+  n="02"
+  statut="adopted"
+  titre="A self-managed VPS rather than a PaaS"
+  contexte="Hosting the FastAPI backend, the Next.js frontend and PDF report generation, on a young company's budget."
+  retenu="A hand-administered Linux VPS with nginx in front: low fixed cost, full control over configuration and over where the data lives."
+  ecarte="A managed PaaS: faster to set up, but costs grow with usage and there is less control over the exact infrastructure configuration."
+>
+  <Todo>check that these reasons match your actual trade-off at the time, and complete them if needed</Todo>
+</Decision>
+
+## What I measured
+
+The figures below are to be filled with real values observed in production — nothing estimated will be published.
+
+- <Todo>volume analysed per run (accounts, settings collected…)</Todo>
+- <Todo>PDF report generation time</Todo>
+- <Todo>median API response time</Todo>
+- <Todo>pilot duration and any measured customer feedback</Todo>
+
+## What went wrong
+
+<Todo>tell a real difficulty: an OAuth integration issue (token refresh, tenant differences), a production incident, a design mistake fixed since — with how it was detected and resolved</Todo>
+
+## What I take away
+
+Maintaining a product in production with real customers enforces a discipline no university project teaches: you don't choose your bugs, you don't postpone an incident to next week, and every line you add is a line you will maintain. That responsibility — even more than the stack — is what most changed how I design software. <Todo>adjust with a specific personal lesson</Todo>

@@ -1,0 +1,53 @@
+---
+title: "Guidage vers des places de stationnement"
+subtitle: "Application cartographique — React et Mapbox"
+stack: "React · Mapbox · calcul d'itinéraire"
+periode: "[À COMPLÉTER : période du projet]"
+statut: "Terminé"
+resume: "Une application React qui guide un conducteur vers une place de stationnement, cartographie Mapbox et calcul d'itinéraire à l'appui."
+order: 4
+---
+
+## Le problème
+
+<Todo>le contexte exact : projet universitaire ou personnel ? quelles données de stationnement (temps réel, statiques) ? quel périmètre géographique ?</Todo>
+
+Trouver une place ne suffit pas : il faut guider le conducteur jusqu'à elle. L'application combine une carte interactive, des données de places de stationnement et un calcul d'itinéraire pour proposer un trajet exploitable.
+
+## Les contraintes
+
+- Une interface cartographique doit rester fluide : chaque rendu inutile de la carte se paie à l'écran.
+- <Todo>les contraintes réelles : fraîcheur des données de places, cibles mobiles, navigateurs à supporter…</Todo>
+
+## Les décisions
+
+<Decision
+  n="01"
+  statut="adoptée"
+  titre="Mapbox comme fond cartographique"
+  contexte="Il fallait une carte interactive avec un rendu de qualité et une API de navigation exploitable depuis React."
+  retenu="[À COMPLÉTER : pourquoi Mapbox — rendu vectoriel, API Directions, quota gratuit… tes raisons réelles]"
+  ecarte="[À COMPLÉTER : Google Maps, Leaflet/OpenStreetMap — et ce qui les a écartés dans ton contexte]"
+/>
+
+<Decision
+  n="02"
+  statut="adoptée"
+  titre="[À COMPLÉTER : deuxième décision structurante]"
+  contexte="[À COMPLÉTER : par exemple la stratégie de calcul d'itinéraire, la gestion de l'état de la carte dans React, ou le choix des données de stationnement]"
+  retenu="[À COMPLÉTER]"
+  ecarte="[À COMPLÉTER]"
+/>
+
+## Ce que j'ai mesuré
+
+- <Todo>temps d'affichage initial de la carte</Todo>
+- <Todo>temps de calcul d'un itinéraire</Todo>
+
+## Ce qui a raté
+
+<Todo>une difficulté réelle : par exemple les rendus intempestifs de la carte dans React, des données de stationnement inexploitables, un problème d'API — et sa résolution</Todo>
+
+## Ce que j'en retire
+
+<Todo>ce que ce projet t'a appris — sur l'intégration d'une bibliothèque impérative (Mapbox) dans un rendu déclaratif (React), par exemple</Todo>

@@ -1,0 +1,7 @@
+# Normalise les fins de ligne en LF dans le dépôt : le workflow tourne sous
+# Linux, et sans ça chaque commit depuis Windows réécrirait des fichiers entiers.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.jpg binary
+*.woff2 binary

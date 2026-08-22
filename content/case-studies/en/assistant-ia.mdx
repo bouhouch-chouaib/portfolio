@@ -1,0 +1,54 @@
+---
+title: "AI virtual assistant"
+subtitle: "Development internship — April to June 2026"
+stack: "Python · RAG / CAG · Google Gemini API"
+periode: "April — June 2026"
+statut: "Delivered · internship completed"
+resume: "An assistant that answers from an internal document corpus, built with retrieval-augmented generation techniques."
+order: 2
+---
+
+## The problem
+
+<Todo>describe the host company (sector, size — nothing confidential) and the exact need: which questions did the assistant have to handle, for which users?</Todo>
+
+A language model on its own knows nothing about an organisation's internal documents, and happily makes things up when it doesn't know. The point of the internship: build an assistant that answers **from the actual document corpus**, with answers traceable to their sources.
+
+## The constraints
+
+- A living document corpus: answers had to reflect the current state of the documents, not a snapshot frozen into a model.
+- <Todo>the internship's real constraints: data confidentiality, API budget, deadlines, existing systems</Todo>
+
+## The decisions
+
+<Decision
+  n="01"
+  statut="adopted"
+  titre="Augment the model with retrieval rather than specialise it"
+  contexte="The assistant had to answer from internal documents that keep changing."
+  retenu="A retrieval-based approach (RAG, complemented with CAG): for every question, the model receives the relevant excerpts from the corpus. Documents can change without retraining, and every answer can cite its sources."
+  ecarte="Fine-tuning a model on the corpus: costly to redo at every document update, and with no traceability from answers back to sources."
+/>
+
+<Decision
+  n="02"
+  statut="adopted"
+  titre="[TO BE COMPLETED: second structuring decision of the internship]"
+  contexte="[TO BE COMPLETED: e.g. the document chunking strategy, the answer evaluation method, or choosing the Gemini API over alternatives]"
+  retenu="[TO BE COMPLETED]"
+  ecarte="[TO BE COMPLETED]"
+/>
+
+## What I measured
+
+- <Todo>corpus size (number of documents, volume)</Todo>
+- <Todo>answer quality: how it was evaluated, and the results</Todo>
+- <Todo>observed response time</Todo>
+
+## What went wrong
+
+<Todo>tell a real difficulty from the internship: wrong answers despite correct context, a document chunking problem, API limits — and how you handled it</Todo>
+
+## What I take away
+
+<Todo>what this internship taught you — about RAG, about working in a company, about evaluating a non-deterministic system</Todo>

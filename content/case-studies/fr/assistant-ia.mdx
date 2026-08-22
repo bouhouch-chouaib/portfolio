@@ -1,0 +1,54 @@
+---
+title: "Assistant virtuel IA"
+subtitle: "Stage de développement — avril à juin 2026"
+stack: "Python · RAG / CAG · API Google Gemini"
+periode: "Avril — juin 2026"
+statut: "Livré · stage terminé"
+resume: "Un assistant qui répond à partir d'un corpus documentaire interne, construit avec des techniques d'augmentation par récupération de contexte."
+order: 2
+---
+
+## Le problème
+
+<Todo>décrire l'entreprise d'accueil (secteur, taille — sans confidentiel) et le besoin exact : quelles questions l'assistant devait-il traiter, pour quels utilisateurs ?</Todo>
+
+Un modèle de langage seul ne connaît pas les documents internes d'une organisation et invente volontiers quand il ne sait pas. L'enjeu du stage : construire un assistant qui répond **à partir du corpus documentaire réel**, avec des réponses traçables vers leurs sources.
+
+## Les contraintes
+
+- Un corpus documentaire vivant : les réponses devaient refléter l'état courant des documents, pas un instantané figé dans un modèle.
+- <Todo>les contraintes réelles du stage : confidentialité des données, budget d'API, délais, existant technique</Todo>
+
+## Les décisions
+
+<Decision
+  n="01"
+  statut="adoptée"
+  titre="Augmenter le modèle par récupération plutôt que le spécialiser"
+  contexte="Il fallait que l'assistant réponde à partir de documents internes qui évoluent."
+  retenu="Une approche par récupération de contexte (RAG, complétée par du CAG) : le modèle reçoit à chaque question les extraits pertinents du corpus. Les documents peuvent changer sans réentraînement, et chaque réponse peut citer ses sources."
+  ecarte="Le fine-tuning d'un modèle sur le corpus : coûteux à refaire à chaque mise à jour documentaire, et sans traçabilité des réponses vers les sources."
+/>
+
+<Decision
+  n="02"
+  statut="adoptée"
+  titre="[À COMPLÉTER : deuxième décision structurante du stage]"
+  contexte="[À COMPLÉTER : par exemple le choix de la stratégie de découpage des documents, de la méthode d'évaluation des réponses, ou de l'API Gemini face aux alternatives]"
+  retenu="[À COMPLÉTER]"
+  ecarte="[À COMPLÉTER]"
+/>
+
+## Ce que j'ai mesuré
+
+- <Todo>taille du corpus (nombre de documents, volume)</Todo>
+- <Todo>qualité des réponses : comment elle a été évaluée, et les résultats</Todo>
+- <Todo>temps de réponse constaté</Todo>
+
+## Ce qui a raté
+
+<Todo>raconter une difficulté réelle du stage : par exemple des réponses fausses malgré un contexte correct, un problème de découpage des documents, des limites de l'API — et comment tu l'as traitée</Todo>
+
+## Ce que j'en retire
+
+<Todo>ce que ce stage t'a appris — sur le RAG, sur le travail en entreprise, sur l'évaluation d'un système non déterministe</Todo>
