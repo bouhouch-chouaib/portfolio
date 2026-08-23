@@ -2,24 +2,28 @@
 title: "Aleth"
 subtitle: "B2B SaaS in production — co-founder and technical lead"
 stack: "Python · FastAPI · PostgreSQL · Next.js · OAuth 2.0 · Stripe · Linux VPS / nginx"
-periode: "[TO BE COMPLETED: since when] — today"
+periode: "June 2026 — today"
 statut: "In production · customer pilot underway"
-resume: "A SaaS product that provides compliance indicators from Google Workspace and Microsoft 365 environments, read-only."
+resume: "Mapping a company's Shadow AI — the AI tools its employees use without the IT department knowing."
 order: 1
 ---
 
 ## The problem
 
-Organisations running on Google Workspace or Microsoft 365 struggle to know where they stand: the actual configuration of their environment changes constantly, and checking it against their compliance requirements is manual work few teams have time for.
+A company's employees use AI tools — writing assistants, note-takers, browser extensions — that the IT department does not know about. This is what is called **Shadow AI**. Every undeclared use opens an access path to company data and creates a hole in its compliance records, even though the company is legally responsible for every tool its employees use, including without its knowledge.
 
-Aleth connects to these environments and turns them into actionable **indicators** and PDF reports. The positioning is deliberate: the product provides indicators to support decisions — never verdicts. <Todo>specify the target customer segment and the typical buying trigger</Todo>
+Aleth connects read-only to an organisation's Google Workspace or Microsoft 365 environment, builds an inventory of the AI tools actually in use, classifies them by risk level, and produces indicators and a report a compliance officer can act on.
+
+The positioning is deliberate and constrains everything else: the product provides **indicators, never compliance verdicts**. The decision stays human.
+
+The target customers are small and mid-sized companies of 50 to 300 employees, with a first circle in regulated finance. The buyer is a DPO or a compliance officer, and the trigger is regulatory.
 
 ## The constraints
 
-- **Sensitive data that isn't ours.** The product reads information about its customers' work environment; every requested access scope must be defensible in front of a CISO.
-- **A real company, with competitors.** This page covers the problem, standard architecture choices and deliverables — deliberately nothing about the product's internal mechanics.
-- **A small team.** The product is built and maintained alongside my final year of studies: every technical choice has to save maintenance time.
-- **Real billing.** A Stripe subscription flow in production, which means webhooks to make reliable and account states to handle properly.
+- **Sensitive data that is not ours.** The product reads information about its customers' work environment; every access scope requested must be defensible in front of a CISO.
+- **A real company, with direct competitors.** This page covers the problem, the standard architecture choices and the deliverables — deliberately nothing about the product's internal mechanics.
+- **A team of two.** The product is built and maintained alongside my final year of studies: every technical choice has to save maintenance time.
+- **Real billing.** A subscription flow in production, which means webhooks to make reliable and account states to handle properly.
 
 ## The decisions
 
@@ -29,33 +33,51 @@ Aleth connects to these environments and turns them into actionable **indicators
   titre="Strictly read-only integrations"
   contexte="The product needs to connect to customer environments through the Google Workspace Admin SDK and Microsoft Graph."
   retenu="OAuth 2.0 with scopes limited to read access. The access surface is minimal, the security case fits in one sentence in front of a CISO, and no code error can ever modify a customer's environment."
-  ecarte="Write scopes, which would have enabled automated remediation: the added value justified neither the risk nor the extra friction in the sales conversation."
+  ecarte="Write scopes, which would have allowed us to offer automated remediation. The added value justified neither the risk nor the extra friction in the sales conversation."
 />
 
 <Decision
   n="02"
   statut="adopted"
   titre="A self-managed VPS rather than a PaaS"
-  contexte="Hosting the FastAPI backend, the Next.js frontend and PDF report generation, on a young company's budget."
-  retenu="A hand-administered Linux VPS with nginx in front: low fixed cost, full control over configuration and over where the data lives."
-  ecarte="A managed PaaS: faster to set up, but costs grow with usage and there is less control over the exact infrastructure configuration."
+  contexte="Hosting the API, the front end and report generation, on a young company's budget and with a team of two."
+  retenu="A hand-administered Linux VPS with nginx in front. It was the solution best suited to our situation: low and predictable fixed cost, full control over configuration and over where the data lives, and infrastructure I already knew how to administer — so time invested in the product rather than in learning a platform."
+  ecarte="A managed PaaS, faster to set up but with costs that grow with usage, and less control over the exact configuration."
+/>
+
+<Decision
+  n="03"
+  statut="adopted"
+  titre="Indicators, never a compliance verdict"
+  contexte="The product has what it needs to tell a customer whether they are compliant or not. Several competitors do exactly that."
+  retenu="Never issue a legal verdict. The product displays an observed exposure and indicators sourced by regulatory article, and stops there. The legal qualification belongs to the customer."
+  ecarte="Displaying a compliance status, which sells better at first glance. A vendor who asserts a customer's compliance takes on liability for a qualification no supplier can carry on their behalf. The commercial cost is real when facing a buyer in a hurry; it is accepted."
 >
-  <Todo>check that these reasons match your actual trade-off at the time, and complete them if needed</Todo>
+  **Technical consequence.** This rule is hard-coded, not merely stated in the pitch. The engine structurally cannot produce a score that would amount to a verdict.
 </Decision>
 
-## What I measured
+## Orders of magnitude
 
-The figures below are to be filled with real values observed in production — nothing estimated will be published.
+The values below are observed orders of magnitude, not instrumented measurements — hence this section's title, different from the one used in the other case studies.
 
-- <Todo>volume analysed per run (accounts, settings collected…)</Todo>
-- <Todo>PDF report generation time</Todo>
-- <Todo>median API response time</Todo>
-- <Todo>pilot duration and any measured customer feedback</Todo>
+- **Scope of an analysis**: every account in the customer's work environment — all users of their Google Workspace or Microsoft 365 tenant.
+- **Duration of an analysis**: on the order of a few seconds.
+- **Report generation**: on the order of a few seconds.
+- **API response time**: on the order of a few seconds.
+- **Failed analyses**: none to date. <Todo>out of how many analyses and over what period, so that this figure means something</Todo>
 
 ## What went wrong
 
-<Todo>tell a real difficulty: an OAuth integration issue (token refresh, tenant differences), a production incident, a design mistake fixed since — with how it was detected and resolved</Todo>
+The product is sold on a promise of reliable indicators. Re-reading the customer journey, I discovered that when an analysis failed technically, the screen displayed an empty result — exactly the same screen as when an analysis completes and finds nothing. An alert did reach us on our side, but nothing distinguished the two situations for the customer.
+
+In other words: **a technical failure read as a reassuring result.** On a product whose entire value is to reveal what you cannot see, that is the worst possible scenario — a false negative presented as a finding.
+
+No test had caught it, because each function worked in isolation. The defect was not in the code, it was in what the code led people to believe. An explicit "incomplete analysis, run again" state, distinct from an empty result, was added before any customer deployment.
 
 ## What I take away
 
-Maintaining a product in production with real customers enforces a discipline no university project teaches: you don't choose your bugs, you don't postpone an incident to next week, and every line you add is a line you will maintain. That responsibility — even more than the stack — is what most changed how I design software. <Todo>adjust with a specific personal lesson</Todo>
+On a product that informs a decision, the absence of information has to be displayed as clearly as the information itself. Silence is never neutral.
+
+More broadly, maintaining a product in production enforces a discipline no university project teaches: you don't choose your bugs, you don't postpone an incident to next week, and every line you add is a line you will maintain. That is where a rule I have applied ever since comes from: **I do not keep a line of code I cannot explain out loud.**
+
+<Renvoi acte="III">This rule comes from here</Renvoi>

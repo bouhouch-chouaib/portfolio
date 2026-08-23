@@ -2,24 +2,28 @@
 title: "Aleth"
 subtitle: "SaaS B2B en production — cofondateur et responsable technique"
 stack: "Python · FastAPI · PostgreSQL · Next.js · OAuth 2.0 · Stripe · VPS Linux / nginx"
-periode: "[À COMPLÉTER : depuis quand] — aujourd'hui"
+periode: "Juin 2026 — aujourd'hui"
 statut: "En production · pilote client en cours"
-resume: "Un produit SaaS qui fournit des indicateurs de conformité à partir d'environnements Google Workspace et Microsoft 365, en lecture seule."
+resume: "Cartographier le Shadow AI d'une entreprise — les outils d'IA que ses salariés utilisent sans que la DSI le sache."
 order: 1
 ---
 
 ## Le problème
 
-Les organisations qui travaillent sur Google Workspace ou Microsoft 365 ont du mal à savoir où elles en sont : la configuration réelle de leur environnement évolue en permanence, et la confronter à leurs exigences de conformité demande un travail manuel que peu d'équipes ont le temps de faire.
+Les employés d'une entreprise utilisent des outils d'IA — assistants de rédaction, preneurs de notes, extensions de navigateur — que la DSI ne connaît pas. C'est ce qu'on appelle le **Shadow AI**. Chaque usage non déclaré ouvre un accès à des données de l'entreprise et crée un trou dans ses registres de conformité, alors même que l'entreprise est juridiquement responsable de tout outil utilisé par ses salariés, y compris à son insu.
 
-Aleth se connecte à ces environnements et en tire des **indicateurs** et des rapports PDF exploitables. Le positionnement est assumé : le produit fournit des indicateurs pour aider à décider — jamais des verdicts. <Todo>préciser le segment de clientèle visé et le déclencheur d'achat typique</Todo>
+Aleth se connecte en lecture seule à l'environnement Google Workspace ou Microsoft 365 d'une organisation, dresse l'inventaire des outils d'IA réellement utilisés, les classe par niveau de risque, et produit des indicateurs et un rapport exploitables par un responsable conformité.
+
+Le positionnement est assumé et contraint tout le reste : le produit fournit des **indicateurs, jamais des verdicts de conformité**. La décision reste humaine.
+
+Les clients visés sont des PME et ETI de 50 à 300 salariés, avec un premier cercle dans la finance régulée. L'acheteur est un DPO ou un responsable conformité, et le déclencheur est réglementaire.
 
 ## Les contraintes
 
 - **Des données sensibles qui ne nous appartiennent pas.** Le produit lit des informations sur l'environnement de travail de ses clients ; chaque périmètre d'accès demandé doit être justifiable devant un DSI.
-- **Une société réelle, avec des concurrents.** Cette page décrit le problème, les choix d'architecture standard et les livrables — volontairement rien de la mécanique interne du produit.
-- **Une équipe réduite.** Le produit est développé et maintenu en parallèle de ma dernière année de BUT : chaque choix technique doit économiser du temps de maintenance.
-- **De la facturation réelle.** Un tunnel d'abonnement Stripe en production, donc des webhooks à fiabiliser et des états de compte à gérer proprement.
+- **Une société réelle, avec des concurrents directs.** Cette page décrit le problème, les choix d'architecture standard et les livrables — volontairement rien de la mécanique interne du produit.
+- **Une équipe de deux.** Le produit est développé et maintenu en parallèle de ma dernière année de BUT : chaque choix technique doit économiser du temps de maintenance.
+- **De la facturation réelle.** Un tunnel d'abonnement en production, donc des webhooks à fiabiliser et des états de compte à gérer proprement.
 
 ## Les décisions
 
@@ -29,33 +33,51 @@ Aleth se connecte à ces environnements et en tire des **indicateurs** et des ra
   titre="Des intégrations strictement en lecture seule"
   contexte="Le produit doit se connecter aux environnements clients via Google Workspace Admin SDK et Microsoft Graph."
   retenu="OAuth 2.0 avec des périmètres limités à la lecture. La surface d'accès est minimale, l'argumentaire sécurité tient en une phrase face à un DSI, et aucune erreur de code ne peut modifier l'environnement d'un client."
-  ecarte="Des périmètres en écriture, qui auraient permis de proposer de la remédiation automatique : la valeur ajoutée ne justifiait ni le risque, ni la friction supplémentaire à la vente."
+  ecarte="Des périmètres en écriture, qui auraient permis de proposer de la remédiation automatique. La valeur ajoutée ne justifiait ni le risque, ni la friction supplémentaire à la vente."
 />
 
 <Decision
   n="02"
   statut="adoptée"
   titre="Un VPS auto-administré plutôt qu'un PaaS"
-  contexte="Héberger l'API FastAPI, le front Next.js et la génération de rapports PDF, avec un budget de jeune société."
-  retenu="Un VPS Linux administré à la main, avec nginx en frontal : coût fixe faible, maîtrise complète de la configuration et de la localisation des données."
-  ecarte="Un PaaS managé : plus rapide à mettre en place, mais coût croissant avec l'usage et moins de contrôle sur la configuration exacte de l'infrastructure."
+  contexte="Héberger l'API, le front et la génération de rapports, avec un budget de jeune société et une équipe de deux."
+  retenu="Un VPS Linux administré à la main, avec nginx en frontal. C'était la solution la plus adaptée à notre situation : coût fixe faible et prévisible, maîtrise complète de la configuration et de la localisation des données, et une infrastructure que je savais déjà administrer — donc du temps investi dans le produit plutôt que dans l'apprentissage d'une plateforme."
+  ecarte="Un PaaS managé, plus rapide à mettre en place mais au coût croissant avec l'usage, et avec moins de contrôle sur la configuration exacte."
+/>
+
+<Decision
+  n="03"
+  statut="adoptée"
+  titre="Des indicateurs, jamais un verdict de conformité"
+  contexte="Le produit dispose des éléments nécessaires pour annoncer à un client s'il est conforme ou non. Plusieurs concurrents le font."
+  retenu="Ne jamais émettre de verdict juridique. Le produit affiche une exposition observée et des indicateurs sourcés par article de règlement, et s'arrête là. La qualification juridique appartient au client."
+  ecarte="Afficher un statut de conformité, plus vendeur au premier regard. Un éditeur qui affirme la conformité d'un client engage sa responsabilité sur une qualification qu'aucun fournisseur ne peut porter à sa place. Le coût commercial est réel face à un acheteur pressé ; il est assumé."
 >
-  <Todo>vérifier que ces raisons correspondent bien à ton arbitrage réel de l'époque, et les compléter si besoin</Todo>
+  **Conséquence technique.** Cette règle est codée en dur, pas seulement écrite dans le discours. Le moteur ne peut structurellement pas produire un score qui vaudrait verdict.
 </Decision>
 
-## Ce que j'ai mesuré
+## Ordres de grandeur
 
-Les chiffres ci-dessous sont à renseigner avec des valeurs réelles constatées en production — rien ne sera publié d'estimé.
+Les valeurs ci-dessous sont des ordres de grandeur observés, pas des mesures instrumentées — d'où le titre de cette section, différent de celui des autres études de cas.
 
-- <Todo>volumétrie analysée par exécution (comptes, paramètres relevés…)</Todo>
-- <Todo>temps de génération d'un rapport PDF</Todo>
-- <Todo>temps de réponse médian de l'API</Todo>
-- <Todo>durée du pilote client et retours chiffrés s'il y en a</Todo>
+- **Périmètre d'une analyse** : l'ensemble des comptes de l'environnement de travail du client — tous les utilisateurs de son tenant Google Workspace ou Microsoft 365.
+- **Durée d'une analyse** : de l'ordre de quelques secondes.
+- **Génération du rapport** : de l'ordre de quelques secondes.
+- **Temps de réponse de l'API** : de l'ordre de quelques secondes.
+- **Analyses en échec** : aucune à ce jour. <Todo>sur combien d'analyses et sur quelle période, pour que ce chiffre veuille dire quelque chose</Todo>
 
 ## Ce qui a raté
 
-<Todo>raconter une vraie difficulté : par exemple un problème d'intégration OAuth (renouvellement de jetons, différences entre tenants), un incident en production, une erreur de conception corrigée depuis — avec la façon dont elle a été détectée puis résolue</Todo>
+Le produit est vendu sur une promesse d'indicateurs fiables. En relisant le parcours client, j'ai découvert qu'en cas d'échec technique d'une analyse, l'écran affichait un résultat vide — exactement le même écran que lorsqu'une analyse aboutit sans rien détecter. Une alerte remontait bien de notre côté, mais rien ne distinguait les deux situations pour le client.
+
+Autrement dit : **un échec technique se lisait comme un résultat rassurant.** Sur un produit dont toute la valeur est de révéler ce qu'on ne voit pas, c'est le pire scénario possible — un faux négatif présenté comme un constat.
+
+Aucun test ne l'avait attrapé, parce que chaque fonction marchait isolément. Le défaut n'était pas dans le code, il était dans ce que le code laissait croire. Un état explicite « analyse incomplète, relancer », distinct d'un résultat vide, a été ajouté avant toute mise en service chez un client.
 
 ## Ce que j'en retire
 
-Maintenir un produit en production avec de vrais clients impose une discipline qu'aucun projet universitaire n'apprend : on ne choisit pas ses bugs, on ne reporte pas un incident à la semaine suivante, et chaque ligne ajoutée devra être maintenue. C'est cette responsabilité — plus encore que la stack — qui a le plus fait progresser ma façon de concevoir. <Todo>ajuster avec un enseignement personnel précis</Todo>
+Sur un produit qui informe une décision, l'absence d'information doit être affichée aussi clairement que l'information elle-même. Le silence n'est jamais neutre.
+
+Plus largement, maintenir un produit en production impose une discipline qu'aucun projet universitaire n'apprend : on ne choisit pas ses bugs, on ne reporte pas un incident à la semaine suivante, et chaque ligne ajoutée devra être maintenue. C'est de là que vient une règle que je m'applique depuis : **je ne garde pas une ligne de code que je ne peux pas expliquer à voix haute.**
+
+<Renvoi acte="III">Cette règle vient de là</Renvoi>

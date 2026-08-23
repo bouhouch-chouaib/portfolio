@@ -1,54 +1,79 @@
 ---
 title: "AI virtual assistant"
-subtitle: "Development internship — April to June 2026"
-stack: "Python · RAG / CAG · Google Gemini API"
-periode: "April — June 2026"
-statut: "Delivered · internship completed"
-resume: "An assistant that answers from an internal document corpus, built with retrieval-augmented generation techniques."
+subtitle: "Development internship — Zéro Wattheure, April to June 2026"
+stack: "Python · CAG and Context Caching · Google Gemini API · BeautifulSoup4 · PyPDF2"
+periode: "13 April — 5 June 2026"
+statut: "Delivered · prototype validated"
+resume: "Taking over a conversational assistant that gave away for free the service the company sells, and turning it into a lead qualification tool."
 order: 2
 ---
 
 ## The problem
 
-<Todo>describe the host company (sector, size — nothing confidential) and the exact need: which questions did the assistant have to handle, for which users?</Todo>
+Zéro Wattheure supports professionals through their energy transition and regulatory compliance — the French Décret Tertiaire, Décret BACS and the CSRD Directive. The company is based in the EDF Lab ecosystem in Palaiseau.
 
-A language model on its own knows nothing about an organisation's internal documents, and happily makes things up when it doesn't know. The point of the internship: build an assistant that answers **from the actual document corpus**, with answers traceable to their sources.
+The first commercial contact on its website goes through a conversational assistant. Technically, it worked: the connection to the Gemini API was operational. **Commercially, it was failing.**
+
+Two precise defects. First, it explained to visitors for free how to use the French government's OPERAT platform — that is, it gave away the service the company sells. Second, it qualified nobody: it answered any visitor indifferently, without trying to find out whether they were a prospect, nor collecting their contact details.
+
+The result was visible in the weekly indicators: conversations going nowhere and almost no contact requests. The tool was costing money without fulfilling its function.
 
 ## The constraints
 
-- A living document corpus: answers had to reflect the current state of the documents, not a snapshot frozen into a model.
-- <Todo>the internship's real constraints: data confidentiality, API budget, deadlines, existing systems</Todo>
+- **No third-party SDK.** The company mandated direct HTTP calls to Google's REST API, without going through an SDK.
+- **A team that would take over the code after I left.** Any solution requiring heavy maintenance was disqualified in advance, however sophisticated.
+- **A modest but living document corpus**: about ten institutional web pages and a few commercial PDFs, expected to change.
+- **No tolerable latency for the visitor.** A user who waits leaves the site.
 
 ## The decisions
 
 <Decision
   n="01"
   statut="adopted"
-  titre="Augment the model with retrieval rather than specialise it"
-  contexte="The assistant had to answer from internal documents that keep changing."
-  retenu="A retrieval-based approach (RAG, complemented with CAG): for every question, the model receives the relevant excerpts from the corpus. Documents can change without retraining, and every answer can cite its sources."
-  ecarte="Fine-tuning a model on the corpus: costly to redo at every document update, and with no traceability from answers back to sources."
-/>
+  titre="CAG rather than RAG"
+  contexte="The assistant had to answer from the company's actual documentation, without making things up."
+  retenu="A CAG (Cache-Augmented Generation) architecture using Gemini's Context Caching. The entire documentation is loaded once into the model's context, then frozen in cache. The model has a global, permanent view of the corpus, with no additional infrastructure to maintain. Combined with a hybrid approach: a button-driven path guides the visitor, and the AI only steps in on complex open questions, which keeps control of the conversation on the company's side."
+  ecarte="RAG (Retrieval-Augmented Generation). Technically more impressive, but disproportionate here. It would have required a vector database, a chunking algorithm and a continuous ingestion pipeline — a permanent maintenance burden for a team that had neither the need nor the time to carry it, over a corpus of about ten pages. RAG becomes relevant on very large document bases; that was not the case."
+>
+  **What it taught me.** The technically most ambitious solution is not the right one when somebody else will have to maintain it after you.
+</Decision>
 
 <Decision
   n="02"
   statut="adopted"
-  titre="[TO BE COMPLETED: second structuring decision of the internship]"
-  contexte="[TO BE COMPLETED: e.g. the document chunking strategy, the answer evaluation method, or choosing the Gemini API over alternatives]"
-  retenu="[TO BE COMPLETED]"
-  ecarte="[TO BE COMPLETED]"
+  titre="A system prompt structured in five blocks, one of them for security"
+  contexte="The existing prompt was a few generic lines, which explained both the drift into 'teacher' mode and the absence of qualification."
+  retenu="A complete rewrite in five blocks: identity and commercial role, inviolable security rules, behavioural guardrails, response format, domain knowledge base and qualification strategy. The security block protects in particular against manipulation attempts aiming to reveal the instructions or make the AI change role. The guardrails explicitly forbid acting as OPERAT support and restrict the assistant to professional customers."
+  ecarte="Simply adjusting the existing prompt. The observed defects were not wording errors but the absence of a frame: without a defined role or explicit prohibitions, a language model defaults to the most helpful posture, which here is exactly the wrong one."
 />
 
 ## What I measured
 
-- <Todo>corpus size (number of documents, volume)</Todo>
-- <Todo>answer quality: how it was evaluated, and the results</Todo>
-- <Todo>observed response time</Todo>
+- **Cache efficiency**: around 6,200 tokens processed per request, of which more than 6,190 came from the cache — over 99 %. The real compute cost only covers the few dozen tokens of the question asked.
+- **Robustness testing**: 10 tests out of 10 passed, across four categories. Basic safety (refusing out-of-scope subjects: tax advice, programming, physical emergencies). Commercial hallucination (no invented prices, features or laws). Commercial behaviour (resisting an attempt to hijack the role, a disguised OPERAT support request, a non-professional visitor). A complete qualification path on a case involving several buildings and several regulatory thresholds.
+- **Corpus ingested**: 11 sites scraped in parallel, plus the commercial PDFs provided by the company.
+- **Perceived latency**: none for the visitor, since document extraction and caching happen entirely upstream, before the first question.
+
+One nuance I want to keep: the saving on requests comes with a cost of storing and maintaining the cache at the provider. The gain is real; it is not free.
 
 ## What went wrong
 
-<Todo>tell a real difficulty from the internship: wrong answers despite correct context, a document chunking problem, API limits — and how you handled it</Todo>
+Two blockers, and they tell the same story.
+
+The first was the structure of the API responses. Gemini does not return a sentence, it returns a nested JSON object: a dictionary containing a list, containing a dictionary, containing a list. I lost a considerable amount of time extracting the only thing I cared about — the response text — before understanding that I had to read that structure as a data schema, rather than groping through it.
+
+The second was tuning the model's behaviour. Gemini's documentation describes what each parameter does, not what it produces on a real case. I spent several days varying the settings and the prompt while observing the effects, with no manual telling me what to choose.
+
+These two difficulties marked the passage between two things I had been confusing: **making an API call work, and understanding what I am manipulating.** The first takes an hour. The second took two weeks, and it is what allowed me to write a system prompt that holds and to pass ten tests designed to break it.
 
 ## What I take away
 
-<Todo>what this internship taught you — about RAG, about working in a company, about evaluating a non-deterministic system</Todo>
+Three things.
+
+The maintenance cost of a solution matters as much as its performance. I could have delivered a RAG and presented it as more accomplished; it would have been abandoned three months after I left.
+
+A language model without an explicit frame spontaneously adopts the most helpful behaviour possible — which, in a commercial context, amounts to giving away for free what the company charges for. **The behaviour of an AI system is designed; it is not obtained by default.**
+
+Finally, evaluating a non-deterministic system requires building tests that look for failure rather than success. All ten scenarios I wrote were aimed at derailing the assistant.
+
+<Renvoi acte="IV">This observation comes from here</Renvoi>

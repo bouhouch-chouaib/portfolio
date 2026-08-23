@@ -11,6 +11,9 @@ export type CaseStudyMeta = {
   stack: string;
   periode: string;
   statut: string;
+  // Renseigné uniquement sur les projets d'équipe : afficher un travail
+  // collectif comme individuel serait malhonnête.
+  role?: string;
   resume: string;
   order: number;
 };
@@ -22,8 +25,8 @@ export type Heading = { id: string; title: string };
 export const caseStudySlugs = [
   "aleth",
   "assistant-ia",
-  "drones-livraison",
-  "stationnement",
+  "infoplacement",
+  "smart-park",
 ] as const;
 
 const contentDir = (locale: Locale) =>

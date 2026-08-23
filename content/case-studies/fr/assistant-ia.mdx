@@ -1,54 +1,79 @@
 ---
 title: "Assistant virtuel IA"
-subtitle: "Stage de développement — avril à juin 2026"
-stack: "Python · RAG / CAG · API Google Gemini"
-periode: "Avril — juin 2026"
-statut: "Livré · stage terminé"
-resume: "Un assistant qui répond à partir d'un corpus documentaire interne, construit avec des techniques d'augmentation par récupération de contexte."
+subtitle: "Stage de développement — Zéro Wattheure, avril à juin 2026"
+stack: "Python · CAG et Context Caching · API Google Gemini · BeautifulSoup4 · PyPDF2"
+periode: "13 avril — 5 juin 2026"
+statut: "Livré · prototype validé"
+resume: "Reprendre un assistant conversationnel qui donnait gratuitement le service que l'entreprise vend, et le transformer en outil de qualification commerciale."
 order: 2
 ---
 
 ## Le problème
 
-<Todo>décrire l'entreprise d'accueil (secteur, taille — sans confidentiel) et le besoin exact : quelles questions l'assistant devait-il traiter, pour quels utilisateurs ?</Todo>
+Zéro Wattheure accompagne des professionnels dans leur transition énergétique et leur mise en conformité réglementaire — Décret Tertiaire, Décret BACS, Directive CSRD. L'entreprise est implantée dans l'écosystème d'EDF Lab à Palaiseau.
 
-Un modèle de langage seul ne connaît pas les documents internes d'une organisation et invente volontiers quand il ne sait pas. L'enjeu du stage : construire un assistant qui répond **à partir du corpus documentaire réel**, avec des réponses traçables vers leurs sources.
+Le premier contact commercial sur son site passe par un assistant conversationnel. Techniquement, il fonctionnait : la connexion à l'API Gemini était opérationnelle. **Commercialement, il échouait.**
+
+Deux défauts précis. D'abord, il expliquait gratuitement aux visiteurs comment utiliser la plateforme gouvernementale OPERAT — c'est-à-dire qu'il donnait le service que l'entreprise vend. Ensuite, il ne qualifiait personne : il répondait indifféremment à tout visiteur sans chercher à savoir s'il s'agissait d'un prospect, ni à récupérer ses coordonnées.
+
+Résultat visible dans les indicateurs hebdomadaires : des conversations sans issue et une prise de contact quasi nulle. L'outil coûtait de l'argent sans remplir sa fonction.
 
 ## Les contraintes
 
-- Un corpus documentaire vivant : les réponses devaient refléter l'état courant des documents, pas un instantané figé dans un modèle.
-- <Todo>les contraintes réelles du stage : confidentialité des données, budget d'API, délais, existant technique</Todo>
+- **Pas de kit de développement tiers.** L'entreprise imposait des appels HTTP directs à l'API REST de Google, sans passer par un SDK.
+- **Une équipe qui reprendrait le code après mon départ.** Toute solution demandant une maintenance lourde était disqualifiée d'avance, quelle que soit sa sophistication.
+- **Un corpus documentaire modeste mais vivant** : une dizaine de pages web institutionnelles et quelques PDF commerciaux, appelés à évoluer.
+- **Aucune latence tolérable côté visiteur.** Un utilisateur qui attend quitte le site.
 
 ## Les décisions
 
 <Decision
   n="01"
   statut="adoptée"
-  titre="Augmenter le modèle par récupération plutôt que le spécialiser"
-  contexte="Il fallait que l'assistant réponde à partir de documents internes qui évoluent."
-  retenu="Une approche par récupération de contexte (RAG, complétée par du CAG) : le modèle reçoit à chaque question les extraits pertinents du corpus. Les documents peuvent changer sans réentraînement, et chaque réponse peut citer ses sources."
-  ecarte="Le fine-tuning d'un modèle sur le corpus : coûteux à refaire à chaque mise à jour documentaire, et sans traçabilité des réponses vers les sources."
-/>
+  titre="Le CAG plutôt que le RAG"
+  contexte="Il fallait que l'assistant réponde à partir de la documentation réelle de l'entreprise, sans inventer."
+  retenu="Une architecture CAG (Cache-Augmented Generation) exploitant le Context Caching de Gemini. Toute la documentation est chargée une seule fois dans le contexte du modèle, puis figée en cache. Le modèle dispose d'une vision globale et permanente du corpus, sans aucune infrastructure supplémentaire à maintenir. Le tout combiné à une approche hybride : un parcours à boutons guide le visiteur, et l'IA n'intervient que sur les questions libres complexes, ce qui garde le contrôle de la conversation côté entreprise."
+  ecarte="Le RAG (Retrieval-Augmented Generation). Techniquement plus impressionnant, mais disproportionné ici. Il aurait imposé une base de données vectorielle, un algorithme de découpage et un pipeline d'ingestion continue — soit une charge de maintenance permanente pour une équipe qui n'avait ni le besoin ni le temps de la porter, sur un corpus d'une dizaine de pages. Le RAG devient pertinent sur de très grandes bases documentaires ; ce n'était pas le cas."
+>
+  **Ce que ça m'a appris.** La solution techniquement la plus ambitieuse n'est pas la bonne quand quelqu'un d'autre devra la maintenir après vous.
+</Decision>
 
 <Decision
   n="02"
   statut="adoptée"
-  titre="[À COMPLÉTER : deuxième décision structurante du stage]"
-  contexte="[À COMPLÉTER : par exemple le choix de la stratégie de découpage des documents, de la méthode d'évaluation des réponses, ou de l'API Gemini face aux alternatives]"
-  retenu="[À COMPLÉTER]"
-  ecarte="[À COMPLÉTER]"
+  titre="Un prompt système structuré en cinq blocs, dont un bloc de sécurité"
+  contexte="Le prompt existant tenait en quelques lignes génériques, ce qui expliquait à la fois la dérive « professeur » et l'absence de qualification."
+  retenu="Une réécriture complète en cinq blocs : identité et rôle commercial, règles de sécurité inviolables, garde-fous comportementaux, format des réponses, base de connaissances métier et stratégie de qualification. Le bloc sécurité protège notamment contre les tentatives de manipulation visant à faire révéler les instructions ou à faire changer l'IA de rôle. Les garde-fous interdisent explicitement de faire le support d'OPERAT et restreignent l'assistant aux clients professionnels."
+  ecarte="Un simple ajustement du prompt existant. Les défauts constatés n'étaient pas des erreurs de formulation mais l'absence de cadre : sans rôle défini ni interdits explicites, un modèle de langage adopte par défaut la posture la plus serviable, qui est ici exactement la mauvaise."
 />
 
 ## Ce que j'ai mesuré
 
-- <Todo>taille du corpus (nombre de documents, volume)</Todo>
-- <Todo>qualité des réponses : comment elle a été évaluée, et les résultats</Todo>
-- <Todo>temps de réponse constaté</Todo>
+- **Efficacité du cache** : environ 6 200 tokens traités par requête, dont plus de 6 190 issus du cache — soit plus de 99 %. Le coût de calcul réel ne porte que sur les quelques dizaines de tokens de la question posée.
+- **Tests de robustesse** : 10 tests sur 10 validés, répartis en quatre catégories. Sécurité de base (refus des sujets hors périmètre : conseil fiscal, code informatique, urgence physique). Hallucination commerciale (aucun prix, aucune fonctionnalité ni aucune loi inventés). Comportement commercial (résistance à une tentative de détournement du rôle, à une demande de support OPERAT déguisée, à un visiteur non professionnel). Parcours de qualification complet sur un cas à plusieurs bâtiments et plusieurs seuils réglementaires.
+- **Corpus ingéré** : 11 sites aspirés en parallèle, plus les PDF commerciaux fournis par l'entreprise.
+- **Latence perçue** : nulle côté visiteur, l'extraction documentaire et la mise en cache étant réalisées entièrement en amont, avant la première question.
+
+Une nuance que je tiens à garder : l'économie sur les requêtes s'accompagne d'un coût de stockage et de maintien du cache chez le fournisseur. Le gain est réel, il n'est pas gratuit.
 
 ## Ce qui a raté
 
-<Todo>raconter une difficulté réelle du stage : par exemple des réponses fausses malgré un contexte correct, un problème de découpage des documents, des limites de l'API — et comment tu l'as traitée</Todo>
+Deux blocages, et ils racontent la même chose.
+
+Le premier a été la structure des réponses de l'API. Gemini ne renvoie pas une phrase, il renvoie un objet JSON imbriqué : un dictionnaire contenant une liste, contenant un dictionnaire, contenant une liste. J'ai perdu un temps considérable à en extraire la seule chose qui m'intéressait — le texte de la réponse — avant de comprendre que je devais lire cette structure comme un schéma de données, pas la parcourir à tâtons.
+
+Le second a été le paramétrage du comportement du modèle. La documentation de Gemini décrit ce que fait chaque paramètre, pas ce qu'il produit sur un cas réel. J'ai passé plusieurs jours à faire varier les réglages et le prompt en observant les effets, sans manuel qui me dise quoi choisir.
+
+Ces deux difficultés ont marqué le passage entre deux choses que je confondais : **faire fonctionner un appel d'API, et comprendre ce que je manipule.** La première prend une heure. La seconde a pris deux semaines, et c'est elle qui m'a permis d'écrire un prompt système qui tient et de valider dix tests conçus pour le casser.
 
 ## Ce que j'en retire
 
-<Todo>ce que ce stage t'a appris — sur le RAG, sur le travail en entreprise, sur l'évaluation d'un système non déterministe</Todo>
+Trois choses.
+
+Le coût de maintenance d'une solution compte autant que ses performances. J'aurais pu livrer un RAG et le présenter comme plus abouti ; il aurait été abandonné trois mois après mon départ.
+
+Un modèle de langage sans cadre explicite adopte spontanément le comportement le plus serviable possible — ce qui, dans un contexte commercial, revient à donner gratuitement ce que l'entreprise facture. **Le comportement d'un système d'IA se conçoit, il ne s'obtient pas par défaut.**
+
+Enfin, évaluer un système non déterministe demande de construire des tests qui cherchent l'échec plutôt que le succès. Les dix scénarios que j'ai écrits visaient tous à faire dérailler l'assistant.
+
+<Renvoi acte="IV">Ce constat vient de là</Renvoi>

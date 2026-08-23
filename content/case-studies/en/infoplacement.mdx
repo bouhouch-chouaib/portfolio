@@ -1,0 +1,79 @@
+---
+title: "InfoPlacement"
+subtitle: "Rebuilding an exam seating application"
+stack: "Object-oriented PHP (MVC) · MySQL · PDO · Twig · JavaScript · html2pdf.js"
+periode: "January — March 2026"
+statut: "Delivered"
+role: "SAÉ 4.01 · team project (4 people) · back-end and security"
+resume: "Rebuilding a fifteen-year-old internal application whose technical debt blocked every possible evolution."
+order: 3
+---
+
+## The problem
+
+The computer science department of the IUT of Metz organised student seating for exams with an internal application more than fifteen years old. It worked, but it had accumulated heavy technical debt: code mixing PHP, SQL and HTML with no separation, obsolete `mysql_*` calls, passwords stored in MD5 with a default password hard-coded in the source, navigation through nested iframes, an unnormalised database.
+
+The most telling detail: a room's layout was stored in a single text field, as a raw string like `31011111013…`. No SQL query could target an individual seat; all the logic was pushed into the application code.
+
+After an audit, the team chose to rebuild rather than patch.
+
+## My role
+
+Back-end and security, within a team of four working in Scrum. Three areas: rebuilding and normalising the database, the authentication and session management system, and data export.
+
+## The constraints
+
+- **An application genuinely in use** by the department's teachers and administration: migrating the existing data and maintaining functional continuity were non-negotiable.
+- **Non-trivial business rules**: students with reduced mobility, extra-time arrangements, anti-cheating spacing.
+- **A project graded on rigour**, with a supervising lecturer who reads the code starting from the data model.
+- Four people, weekly sprints.
+
+## The decisions
+
+<Decision
+  n="01"
+  statut="adopted"
+  titre="Move from raw storage to a relational model of seats"
+  contexte="Room layouts were stored as a single character string in a TEXT field."
+  retenu="Dropping that table and creating a siege table, where each seat becomes a proper relational entity, with its matrix coordinates, its type (standard, reduced mobility, extra time, aisle) and its foreign key to the room. Seating becomes queryable in SQL again, and a constraint-based seating algorithm becomes possible."
+  ecarte="Keeping the existing format and adding an application-side reading layer. Less immediate work, but it would have frozen the design flaw in place and made any query on seats impossible."
+/>
+
+<Decision
+  n="02"
+  statut="adopted"
+  titre="Restrict cascading deletes"
+  contexte="The old database applied ON DELETE CASCADE across all of its relations."
+  retenu="A general move to ON UPDATE CASCADE with restricted deletion, keeping the cascade only on strong ownership relations — the seats of a room disappear with it, which is the expected behaviour."
+  ecarte="Keeping the blanket cascade. Its real consequence: deleting a cohort deleted every attached group, and therefore every student. A routine operation could wipe out the department's core data."
+/>
+
+<Decision
+  n="03"
+  statut="adopted"
+  titre="MD5 to Bcrypt, and session hardening"
+  contexte="The audit revealed passwords stored in MD5 and a default password hard-coded in the source."
+  retenu="password_hash() with Bcrypt, moving the column from TEXT to VARCHAR(255), and hardening session variables to prevent privilege escalation. Prepared statements via PDO across all data access."
+  ecarte="A progressive migration with dual storage during a transition period. Gentler for users, but it kept MD5 hashes in the database — that is, the problem itself — for an indefinite length of time."
+/>
+
+## What I measured
+
+- **Six join tables removed** (`devoir_groupe`, `devoir_promo`, `enseigne`, `placement`, `surveille`, `matiere`), with assignment logic centralised into a single table.
+- **Calculated fields eliminated**: the student count per group, previously stored in a denormalised field prone to update anomalies, is now derived dynamically.
+- **Tighter typing**: boolean attributes stored as `INT(11)` converted to `TINYINT(1)`, foreign keys optimised.
+- **Two competing PDF libraries** (ezpdf and fpdf) replaced by one.
+
+## What went wrong
+
+PDF export was by far the hardest part, and I spent more time on it than planned. First to choose the technology: two obsolete libraries coexisted in the old code and duplicated each other, and we had to decide between replacing them with a modern server-side equivalent or moving generation to the client. Then to get a visually acceptable result — an exported seating plan has to stay readable by an invigilator on an A4 sheet, which is a harder constraint than it sounds. The chosen solution dynamically rebuilds a stripped-down HTML document, without interface elements, before converting it to landscape PDF.
+
+But the project's real difficulty was elsewhere: **building a clean version on top of a shaky existing one.** Every decision had to account for what the old application did, what its users expected, and what absolutely must not be reproduced. It was painful, and in hindsight it was the best training I have had for the real work of rebuilding systems in a company — where you almost always inherit something rather than starting from a blank page.
+
+## What I take away
+
+A badly designed database cannot be fixed in the application code: it contaminates everything it touches. The string `31011111013…` was not a storage detail, it was the reason no interesting feature had been added to that application in fifteen years.
+
+I also take away that a serious audit starts with the schema before it starts with the code. The most severe flaws we found — the destructive cascade, the MD5, the hard-coded password — were all visible in the structure, not in the logic.
+
+<Renvoi acte="II">This way of looking at what already exists comes from here</Renvoi>

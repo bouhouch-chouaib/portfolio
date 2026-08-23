@@ -53,14 +53,17 @@ export default async function CaseStudyPage({
   // aucun runtime MDX n'est envoyé au navigateur.
   const { content: body } = await compileMDX({
     source: content,
-    components: makeMdxComponents(dict),
+    components: makeMdxComponents(locale, dict),
   });
 
-  const facts = [
+  // Le rôle n'apparaît que sur les projets d'équipe : présenter un travail
+  // collectif comme individuel serait malhonnête vis-à-vis d'un recruteur.
+  const facts: [string, string][] = [
     [dict.etude.stack, meta.stack],
     [dict.etude.periode, meta.periode],
     [dict.etude.statut, meta.statut],
-  ] as const;
+  ];
+  if (meta.role) facts.splice(1, 0, [dict.etude.role, meta.role]);
 
   return (
     <div className="py-10 sm:py-14">

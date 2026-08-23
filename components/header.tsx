@@ -17,6 +17,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dict["header"] 
 
   const links = [
     { href: `/${locale}/`, label: dict.navHome },
+    { href: `/${locale}/manifeste/`, label: dict.navManifeste },
     { href: `/${locale}/a-propos/`, label: dict.navAbout },
     { href: `/${locale}/contact/`, label: dict.navContact },
   ];

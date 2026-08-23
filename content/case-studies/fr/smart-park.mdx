@@ -1,0 +1,79 @@
+---
+title: "Smart Park"
+subtitle: "Aide à la décision pour le stationnement urbain"
+stack: "React · Vite · Mapbox GL JS · PHP · MySQL · Cisco Packet Tracer"
+periode: "Septembre 2025 — 16 janvier 2026"
+statut: "Livré · en ligne"
+role: "SAÉ 3.01 · projet d'équipe (5 personnes) · front-end et algorithmique"
+resume: "Agréger les données de parkings de huit villes en une aide à la décision immédiate pour un conducteur au volant."
+order: 4
+---
+
+## Le problème
+
+Une part importante de la congestion en centre-ville est générée par des véhicules qui cherchent une place. L'Eurométropole de Metz publie des données de parkings connectés, mais l'information reste fragmentée et inexploitable pour un conducteur au volant.
+
+L'objectif : agréger des flux hétérogènes provenant de plusieurs villes et les transformer en une aide à la décision immédiate — quelle place, où, et comment y aller.
+
+L'application couvre huit villes : Metz, Lille, Lyon, Paris, La Rochelle, Toulouse, Marseille et Londres. Elle propose la consultation sur carte, les tarifs, les favoris, la réservation avec vérification de capacité, et des filtres d'inclusion (places PMR, bornes électriques).
+
+## Mon rôle
+
+Front-end et algorithmique : l'interface cartographique, la géolocalisation, et le calcul d'itinéraire avec recalcul en cours de trajet.
+
+## Les contraintes
+
+- **Des formats de données différents pour chaque ville**, à uniformiser vers un modèle interne unique.
+- **Une carte doit rester fluide.** Chaque rendu inutile se voit à l'écran, surtout avec de nombreux marqueurs dynamiques.
+- **Des restrictions CORS** sur les flux publics consommés directement depuis le navigateur.
+- Cinq personnes, des sprints de deux semaines, avec une date de livraison ferme.
+
+## Les décisions
+
+<Decision
+  n="01"
+  statut="adoptée"
+  titre="Migration de Leaflet vers Mapbox GL JS"
+  contexte="Le projet était initialement parti sur Leaflet, choix par défaut pour une carte web."
+  retenu="Mapbox GL JS, après des tests de charge qui ont révélé les limites de Leaflet sur l'affichage de nombreux marqueurs dynamiques. Le rendu vectoriel tient la charge, et l'API Directions couvrait le besoin de guidage."
+  ecarte="Leaflet, conservé jusqu'aux tests. Ce n'est pas un mauvais outil ; il n'était pas dimensionné pour cet usage précis."
+>
+  **Ce que ça m'a appris.** Le pivot a coûté du temps en cours de projet, mais il a été décidé sur une mesure et non sur une intuition. C'est la différence entre changer de technologie et se raviser.
+</Decision>
+
+<Decision
+  n="02"
+  statut="adoptée"
+  titre="Une couche d'adaptation par ville"
+  contexte="Chaque collectivité publie ses données de stationnement dans son propre format."
+  retenu="Un adaptateur par ville, chargé de traduire le format externe vers un modèle interne unique. Le reste de l'application ne connaît qu'un seul type d'objet, et ajouter une ville revient à écrire un adaptateur."
+  ecarte="Traiter les spécificités de chaque ville directement dans les composants d'affichage. Plus rapide sur la première ville, ingérable dès la troisième."
+/>
+
+<Decision
+  n="03"
+  statut="adoptée"
+  titre="Un proxy léger pour contourner les restrictions CORS"
+  contexte="Les flux publics n'étaient pas consommables directement depuis le navigateur."
+  retenu="Un relais côté serveur en PHP, un par source. Il règle le problème CORS et offre un point unique où normaliser les données."
+  ecarte="L'appel direct depuis le navigateur, bloqué par les en-têtes des fournisseurs de données, et qui n'aurait de toute façon offert aucun endroit où normaliser les formats."
+/>
+
+## Ce que j'ai mesuré
+
+- **Huit villes intégrées**, dont une hors de France, ce qui a servi de test réel de la couche d'adaptation.
+- **288 points d'effort estimés** pour le projet complet, dont 144 pour le produit minimum viable. L'US03, le guidage en temps réel, a été estimée à elle seule à 89 points — signal d'un risque technique majeur, traité en priorité pour cette raison.
+
+## Ce qui a raté
+
+La difficulté ne venait pas des fonctionnalités mais de l'outil. Mapbox GL JS expose un grand nombre de composants — couches, sources, contrôles, API Directions — et chacun fonctionne d'une certaine manière qui n'est pas nécessairement celle dont on a besoin. Obtenir exactement le comportement voulu a demandé beaucoup plus de temps que prévu : comprendre quel composant faisait quoi, lequel utiliser pour quel effet, et comment les faire coexister dans une application React sans casser le rendu.
+
+Le même problème s'est posé sur chaque fonctionnalité que nous voulions ajouter au-delà du cahier des charges. Une idée simple à énoncer se heurtait presque toujours à la question de savoir si la bibliothèque permettait de la réaliser proprement, ou seulement en la contournant. **Cet arbitrage — construire avec l'outil ou contre lui — a occupé une part importante du projet.**
+
+## Ce que j'en retire
+
+Intégrer une bibliothèque puissante coûte du temps avant d'en faire gagner. Le travail réel n'a pas été d'écrire des fonctionnalités, mais d'apprendre à quoi servait chaque brique de l'outil et ce qu'il acceptait qu'on lui demande.
+
+J'en retiens aussi la valeur d'un pivot décidé sur une mesure. Abandonner Leaflet en cours de projet a coûté cher, mais la décision reposait sur des tests de charge, pas sur une préférence. C'est ce qui l'a rendue défendable devant le reste de l'équipe.
+
+<Renvoi acte="II">Cette exigence de mesure vient de là</Renvoi>

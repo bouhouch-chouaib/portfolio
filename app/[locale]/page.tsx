@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { Locale } from "@/lib/i18n";
 import { getDict } from "@/lib/dictionaries";
 import { getCaseStudies } from "@/lib/case-studies";
+import { getManifeste } from "@/lib/manifeste";
 
 /*
- * Accueil : l'accroche, puis le registre des études de cas.
+ * Accueil : l'accroche, le registre des études de cas, puis le manifeste.
  * Pas de cartes à vignettes — les projets se jugent sur le raisonnement,
  * donc chaque entrée montre le problème et le statut, pas une capture.
  */
@@ -16,6 +17,7 @@ export default async function Home({
   const { locale } = (await params) as { locale: Locale };
   const dict = getDict(locale);
   const studies = getCaseStudies(locale);
+  const { actes, minutes } = getManifeste(locale);
 
   return (
     <div className="py-12 sm:py-16">
@@ -46,13 +48,32 @@ export default async function Home({
                   </span>
                   <span className="mt-1 block text-graphite">{s.resume}</span>
                 </span>
-                <span className="font-mono text-xs text-graphite sm:text-right sm:max-w-48">
+                <span className="font-mono text-xs text-graphite sm:max-w-48 sm:text-right">
                   {s.statut}
                 </span>
               </Link>
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Bloc distinct du registre : le manifeste n'est pas un cinquième
+          projet, c'est la clé de lecture des quatre autres. */}
+      <section aria-labelledby="manifeste" className="mt-16 border border-trait bg-blanc p-6 sm:p-8">
+        <h2 id="manifeste" className="font-mono text-xs tracking-widest text-graphite uppercase">
+          {dict.home.manifesteTitre}
+        </h2>
+        <p className="mt-3 max-w-[46rem] text-lg">{dict.home.manifesteAccroche}</p>
+        <p className="mt-4 font-mono text-xs text-graphite">
+          {dict.manifeste.actesCount.replace("{n}", String(actes.length))} ·{" "}
+          {dict.manifeste.lecture.replace("{n}", String(minutes))}
+        </p>
+        <Link
+          href={`/${locale}/manifeste/`}
+          className="mt-4 inline-block text-prusse underline underline-offset-4"
+        >
+          {dict.home.manifesteLire} →
+        </Link>
       </section>
     </div>
   );

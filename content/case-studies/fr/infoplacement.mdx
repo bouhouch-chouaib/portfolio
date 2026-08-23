@@ -1,0 +1,79 @@
+---
+title: "InfoPlacement"
+subtitle: "Refonte d'une application de placement d'examens"
+stack: "PHP orienté objet (MVC) · MySQL · PDO · Twig · JavaScript · html2pdf.js"
+periode: "Janvier — mars 2026"
+statut: "Livré"
+role: "SAÉ 4.01 · projet d'équipe (4 personnes) · back-end et sécurité"
+resume: "Reconstruire une application interne vieille de quinze ans, dont la dette technique bloquait toute évolution."
+order: 3
+---
+
+## Le problème
+
+Le département informatique de l'IUT de Metz organisait le placement des étudiants en salle d'examen avec une application interne vieille de plus de quinze ans. Elle fonctionnait, mais accumulait une dette technique lourde : code mêlant PHP, SQL et HTML sans séparation, appels `mysql_*` obsolètes, mots de passe stockés en MD5 avec un mot de passe par défaut codé en dur, navigation par iframes imbriquées, base de données non normalisée.
+
+Le point le plus révélateur : la disposition d'une salle était stockée dans un unique champ texte, sous forme de chaîne brute du type `31011111013…`. Aucune requête SQL ne pouvait porter sur un siège particulier ; toute la logique était déportée dans le code applicatif.
+
+Après audit, l'équipe a choisi de reconstruire plutôt que de rafistoler.
+
+## Mon rôle
+
+Back-end et sécurité, au sein d'une équipe de quatre en méthode Scrum. Trois chantiers : la refonte et la normalisation de la base de données, le système d'authentification et de gestion des sessions, et l'export des données.
+
+## Les contraintes
+
+- **Une application réellement utilisée** par les enseignants et l'administration du département : reprise des données existantes et continuité fonctionnelle non négociables.
+- **Des contraintes métier non triviales** : étudiants à mobilité réduite, tiers-temps, espacement anti-triche.
+- **Un projet noté sur la rigueur**, avec un enseignant référent qui lit le code à partir de la modélisation.
+- Quatre personnes, des sprints hebdomadaires.
+
+## Les décisions
+
+<Decision
+  n="01"
+  statut="adoptée"
+  titre="Passer d'un stockage brut à un modèle relationnel des sièges"
+  contexte="La disposition des salles était stockée en une chaîne de caractères unique dans un champ TEXT."
+  retenu="Suppression de cette table et création d'une table siege, où chaque place devient une entité relationnelle propre, avec ses coordonnées matricielles, son type (normal, PMR, tiers-temps, couloir) et sa clé étrangère vers la salle. Le placement redevient interrogeable en SQL, et l'algorithme de placement sous contraintes devient possible."
+  ecarte="Conserver le format existant en ajoutant une couche de lecture applicative. Moins de travail immédiat, mais cela aurait figé le défaut de conception et rendu impossible toute requête sur les sièges."
+/>
+
+<Decision
+  n="02"
+  statut="adoptée"
+  titre="Restreindre les suppressions en cascade"
+  contexte="L'ancienne base appliquait ON DELETE CASCADE sur l'ensemble de ses relations."
+  retenu="Passage généralisé à ON UPDATE CASCADE avec restriction en suppression, la cascade n'étant conservée que sur les relations d'appartenance forte — les sièges d'une salle disparaissent avec elle, ce qui est le comportement attendu."
+  ecarte="Le maintien de la cascade généralisée. Sa conséquence réelle : supprimer une promotion supprimait tous les groupes rattachés, et donc tous les étudiants. Une manipulation de routine pouvait effacer les données de base du département."
+/>
+
+<Decision
+  n="03"
+  statut="adoptée"
+  titre="MD5 vers Bcrypt, et sécurisation des sessions"
+  contexte="L'audit a révélé un stockage des mots de passe en MD5 et un mot de passe par défaut en dur dans le code."
+  retenu="password_hash() avec Bcrypt, passage du champ de TEXT à VARCHAR(255), et sécurisation des variables de session pour empêcher les usurpations de privilèges. Requêtes préparées via PDO sur l'ensemble des accès aux données."
+  ecarte="Une migration progressive avec double stockage pendant une période de transition. Plus douce pour les utilisateurs, mais elle maintenait des empreintes MD5 en base — c'est-à-dire le problème lui-même — pendant une durée indéterminée."
+/>
+
+## Ce que j'ai mesuré
+
+- **Six tables de liaison supprimées** (`devoir_groupe`, `devoir_promo`, `enseigne`, `placement`, `surveille`, `matiere`), la logique d'affectation étant centralisée dans une seule table.
+- **Élimination des champs calculés** : le décompte d'étudiants par groupe, auparavant stocké dans un champ dénormalisé sujet aux anomalies de mise à jour, est désormais obtenu dynamiquement.
+- **Typage resserré** : attributs booléens stockés en `INT(11)` convertis en `TINYINT(1)`, clés étrangères optimisées.
+- **Deux bibliothèques PDF concurrentes** (ezpdf et fpdf) remplacées par une seule.
+
+## Ce qui a raté
+
+L'export PDF a été de loin la partie la plus difficile, et j'ai passé plus de temps dessus que prévu. D'abord pour choisir la technologie : deux bibliothèques obsolètes coexistaient dans l'ancien code et faisaient doublon, et il fallait trancher entre les remplacer par un équivalent moderne côté serveur ou déporter la génération côté client. Ensuite pour obtenir un rendu visuellement acceptable — un plan de salle exporté doit rester lisible par un surveillant sur une feuille A4, ce qui est une contrainte plus dure qu'elle n'en a l'air. La solution retenue reconstruit dynamiquement un document HTML épuré, sans éléments d'interface, avant de le convertir en PDF paysage.
+
+Mais la vraie difficulté du projet était ailleurs : **construire une version propre par-dessus un existant bancal.** Chaque décision devait tenir compte de ce que l'ancienne application faisait, de ce que ses utilisateurs attendaient, et de ce qu'il fallait absolument ne pas reproduire. C'était pénible, et c'est rétrospectivement le meilleur entraînement que j'aie eu au travail réel de refonte en entreprise — où l'on hérite presque toujours de quelque chose plutôt que de partir d'une page blanche.
+
+## Ce que j'en retire
+
+Une base de données mal conçue ne se corrige pas dans le code applicatif : elle contamine tout ce qui la touche. La chaîne `31011111013…` n'était pas un détail de stockage, c'était la raison pour laquelle aucune fonctionnalité intéressante n'avait pu être ajoutée à cette application en quinze ans.
+
+J'en retiens aussi qu'un audit sérieux se fait sur le schéma avant de se faire sur le code. Les failles les plus graves que nous avons trouvées — la cascade destructrice, le MD5, le mot de passe en dur — étaient toutes visibles dans la structure, pas dans la logique.
+
+<Renvoi acte="II">Ce regard sur l'existant vient de là</Renvoi>

@@ -159,3 +159,96 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Manifeste — identité typographique propre. C'est une lecture longue,
+ * pas de la documentation : corps plus grand, interligne plus généreux,
+ * colonne plus étroite (58ch, fixée côté page). Aucune animation.
+ */
+.manifeste {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.manifeste p {
+  margin: 1.25rem 0;
+}
+.manifeste strong {
+  font-weight: 600;
+}
+.manifeste em {
+  font-style: italic;
+  color: var(--color-graphite);
+}
+.manifeste a {
+  color: var(--color-prusse);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Titre d'acte : numéro en mono, titre en display, sous-titre en italique.
+   Filet supérieur pour marquer la rupture entre deux actes. */
+.manifeste .acte {
+  display: block;
+  margin-top: 4.5rem;
+  margin-bottom: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-trait);
+  scroll-margin-top: 2rem;
+}
+.manifeste .acte-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-prusse);
+}
+.manifeste .acte-titre {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: var(--text-xl);
+  line-height: var(--text-xl--line-height);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.manifeste .acte-sous {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: var(--text-base);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--color-graphite);
+}
+
+/* Scénarios de l'Acte V. */
+.manifeste h3 {
+  margin-top: 2.75rem;
+  margin-bottom: 0.5rem;
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+/* Préface : l'entrée dans le texte, distincte du manifeste lui-même. */
+.preface {
+  border-left: 3px solid var(--color-prusse);
+  background: var(--color-blanc);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.preface p {
+  margin: 0.75rem 0 0;
+}
+
+/* Note de méthode : discrète, en retrait, avant l'Acte I. */
+.methode {
+  border: 1px dashed var(--color-trait);
+  padding: 1rem 1.25rem;
+  margin-bottom: 2.5rem;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-graphite);
+}
+.methode p {
+  margin: 0.5rem 0 0;
+}
