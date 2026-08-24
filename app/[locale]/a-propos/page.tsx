@@ -23,6 +23,10 @@ export default async function AboutPage({
 }) {
   const { locale } = (await params) as { locale: Locale };
   const dict = getDict(locale);
+  // next/image n'ajoute pas le basePath quand l'optimisation est désactivée
+  // (export statique) : le préfixe du sous-chemin doit être mis à la main,
+  // comme sur les liens de CV de la page Contact.
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   return (
     <div className="py-12 sm:py-16">
@@ -36,7 +40,7 @@ export default async function AboutPage({
         {/* width/height explicites : la place est réservée avant le
             chargement, donc aucun décalage de mise en page. */}
         <Image
-          src="/photo.jpg"
+          src={`${base}/photo.jpg`}
           alt={dict.apropos.photoAlt}
           width={400}
           height={400}
